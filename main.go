@@ -35,11 +35,30 @@ func (s *Service) Watch() {
 
 			repositories := s.config.getReposWithName(repo)
 
+			branches := p.GetBranches()
+
 			for _, r := range repositories {
+				needToUpdate := false
+				for _, b := range branches {
+					if b == r.Branch {
+						needToUpdate = true
+						break
+					}
+				}
+				if !needToUpdate {
+					continue
+				}
 				channel := make(chan *Payload, queueSize)
 				s.queue[repo+"#"+r.Branch] = channel
 
 				go s.Process(channel, r)
+
+				select {
+				case s.queue[repo+"#"+r.Branch] <- p:
+					// no more
+				default:
+					// no more
+				}
 			}
 		}
 	}

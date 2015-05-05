@@ -60,3 +60,13 @@ func (p *Payload) GetCommitMessages() []string {
 
 	return messages
 }
+
+func (p *Payload) GetBranches() []string {
+	var branches []string
+
+	for _, commit := range p.Commits {
+		branches = append(branches, commit.Branch)
+	}
+
+	return branches
+}
