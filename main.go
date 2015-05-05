@@ -6,6 +6,8 @@ import (
 	"log"
 	"net/http"
 	"net/url"
+	"os"
+	"os/exec"
 	"strings"
 )
 
@@ -92,8 +94,17 @@ func (s *Service) Process(ch chan *Payload, repo *RepoConfig) {
 	log.Printf("Run `%s` on '%s'\n", repo.Command, repo.Name)
 
 	for payload := range ch {
-		log.Printf("New changeset:\n - %s", strings.Join(payload.GetCommitMessages(), "\n - "))
+		log.Printf("New changeset:\n - %s\n", strings.Join(payload.GetCommitMessages(), "\n - "))
 		log.Printf("Run command on %s: %s", payload.Repository.Name, repo.Command)
+
+		command := strings.Split(repo.Command, " ")
+		cmd := exec.Command(command[0], command[1:]...)
+		cmd.Stdout = os.Stdout
+		cmd.Stderr = os.Stderr
+
+		if err := cmd.Run(); err != nil {
+			log.Println(err)
+		}
 	}
 }
 
