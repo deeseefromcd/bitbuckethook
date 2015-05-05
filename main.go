@@ -26,6 +26,7 @@ type Service struct {
 func (s *Service) Watch() {
 	var repos []string
 	for p := range s.incoming {
+		repos = repos[:0]
 		repos = append(repos, p.Repository.Name)
 
 		for _, repo := range repos {
@@ -99,7 +100,6 @@ func (s *Service) ServeHTTP(res http.ResponseWriter, req *http.Request) {
 	}
 
 	content := req.FormValue("payload")
-	log.Print(content)
 	payload, err := parsePayload(content)
 
 	if err != nil {
