@@ -48,16 +48,17 @@ func (s *Service) Watch() {
 				if !needToUpdate {
 					continue
 				}
+
+				repoBranchKey := repo + "#" + r.Branch
+
 				channel := make(chan *Payload, queueSize)
-				s.queue[repo+"#"+r.Branch] = channel
+				s.queue[repoBranchKey] = channel
 
 				go s.Process(channel, r)
 
 				select {
-				case s.queue[repo+"#"+r.Branch] <- p:
-					// no more
+				case s.queue[repoBranchKey] <- p:
 				default:
-					// no more
 				}
 			}
 		}
@@ -98,10 +99,12 @@ func (s *Service) ServeHTTP(res http.ResponseWriter, req *http.Request) {
 	}
 
 	content := req.FormValue("payload")
+	log.Print(content)
 	payload, err := parsePayload(content)
 
 	if err != nil {
 		log.Printf("Invalid payload from %s\n", req.RemoteAddr)
+		log.Print(err)
 		res.WriteHeader(http.StatusBadRequest)
 		return
 	}
