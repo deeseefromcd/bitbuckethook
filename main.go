@@ -99,6 +99,8 @@ func (s *Service) Process(ch chan *Payload, repo *RepoConfig) {
 
 		command := strings.Split(repo.Command, " ")
 		cmd := exec.Command(command[0], command[1:]...)
+
+		cmd.Dir = repo.Root
 		cmd.Stdout = os.Stdout
 		cmd.Stderr = os.Stderr
 
