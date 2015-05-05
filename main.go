@@ -6,6 +6,7 @@ import (
 	"log"
 	"net/http"
 	"net/url"
+	"strings"
 )
 
 const queueSize int = 10
@@ -89,6 +90,11 @@ func (s *Service) ServeHTTP(res http.ResponseWriter, req *http.Request) {
 
 func (s *Service) Process(ch chan *Payload, repo *RepoConfig) {
 	log.Printf("Run `%s` on '%s'\n", repo.Command, repo.Name)
+
+	for payload := range ch {
+		log.Printf("New changeset:\n - %s", strings.Join(payload.GetCommitMessages(), "\n - "))
+		log.Printf("Run command on %s: %s", payload.Repository.Name, repo.Command)
+	}
 }
 
 func main() {

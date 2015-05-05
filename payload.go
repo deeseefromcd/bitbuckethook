@@ -50,3 +50,13 @@ func parsePayload(content string) (*Payload, error) {
 
 	return payload, nil
 }
+
+func (p *Payload) GetCommitMessages() []string {
+	var messages []string
+
+	for _, commit := range p.Commits {
+		messages = append(messages, commit.Message)
+	}
+
+	return messages
+}
