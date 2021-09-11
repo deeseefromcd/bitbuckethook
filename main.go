@@ -99,9 +99,8 @@ func (s *Service) ServeHTTP(res http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	content := req.FormValue("payload")
-	payload, err := parsePayload(content)
-
+	defer req.Body.Close()
+	payload, err := parsePayload(req.Body)
 	if err != nil {
 		log.Printf("Invalid payload from %s\n", req.RemoteAddr)
 		log.Print(err)
